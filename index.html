@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>گردونه شانس</title>
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link href="%DA%AF%D8%B1%D8%AF%D9%88%D9%86%D9%87%20%D8%B4%D8%A7%D9%86%D8%B3_files/css2_Oo8r.css" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep: #0E3B39;
+    --bg-panel: #123F3D;
+    --bg-panel-2: #16473F;
+    --line: #26635B;
+    --gold: #D6A93B;
+    --gold-pale: #EFD8A4;
+    --teal-mid: #1C6E67;
+    --teal-light: #2E9C90;
+    --ruby: #A63446;
+    --cream: #F4EDE0;
+    --cream-dim: #C9DAD5;
+  }
+
+  *{ box-sizing:border-box; }
+
+  html,body{
+    margin:0; padding:0; min-height:100%;
+    background:
+      radial-gradient(circle at 50% -10%, rgba(214,169,59,0.10), transparent 60%),
+      var(--bg-deep);
+    font-family: 'Vazirmatn', sans-serif;
+    color: var(--cream);
+  }
+
+  body{
+    display:flex; flex-direction:column; align-items:center;
+    padding: 28px 16px 60px;
+    position:relative;
+    overflow-x:hidden;
+  }
+
+  /* subtle repeating diamond motif in the background */
+  .bg-pattern{
+    position:fixed; inset:0; pointer-events:none; opacity:0.05; z-index:0;
+    background-image:
+      linear-gradient(45deg, var(--gold) 25%, transparent 25.5%, transparent 75%, var(--gold) 75.5%, var(--gold)),
+      linear-gradient(45deg, var(--gold) 25%, transparent 25.5%, transparent 75%, var(--gold) 75.5%, var(--gold));
+    background-size: 46px 46px;
+    background-position: 0 0, 23px 23px;
+  }
+
+  .wrap{ position:relative; z-index:1; width:100%; max-width:460px; display:flex; flex-direction:column; align-items:center; }
+
+  header{ text-align:center; margin-bottom: 6px; width:100%; }
+
+  .eyebrow{
+    display:inline-flex; align-items:center; gap:8px;
+    font-size: 12.5px; letter-spacing:0.04em; color: var(--gold-pale);
+    background: rgba(214,169,59,0.10);
+    border: 1px solid rgba(214,169,59,0.35);
+    padding: 5px 14px; border-radius: 999px;
+    margin-bottom: 14px;
+  }
+  .eyebrow::before{ content:"◆"; font-size:8px; color:var(--gold); }
+
+  h1{
+    font-weight:800; font-size: clamp(26px, 6vw, 34px);
+    margin: 0 0 8px;
+    color: var(--cream);
+  }
+  h1 span{ color: var(--gold); }
+
+  .subtitle{
+    margin:0; font-size:14.5px; color: var(--cream-dim); line-height:1.7;
+    max-width: 340px; margin-inline:auto;
+  }
+
+  /* WHEEL */
+  .wheel-stage{
+    position:relative;
+    width: min(84vw, 340px);
+    aspect-ratio: 1/1;
+    margin: 26px 0 30px;
+  }
+
+  .pointer{
+    position:absolute; top:-8px; left:50%; transform: translateX(-50%);
+    width: 34px; height: 42px; z-index:5;
+    filter: drop-shadow(0 3px 4px rgba(0,0,0,0.35));
+  }
+
+  .rim{
+    position:absolute; inset:0; border-radius:50%;
+    background: conic-gradient(from 0deg, var(--gold), var(--gold-pale), var(--gold), var(--gold-pale), var(--gold));
+    padding: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.35), inset 0 0 0 1px rgba(0,0,0,0.15);
+  }
+
+  .rim-inner{
+    width:100%; height:100%; border-radius:50%;
+    background: var(--bg-deep);
+    padding: 6px;
+  }
+
+  #wheelSvg{
+    width:100%; height:100%; border-radius:50%;
+    display:block;
+    transition: transform 4.4s cubic-bezier(.17,.67,.16,1.01);
+    will-change: transform;
+    box-shadow: inset 0 0 0 2px rgba(0,0,0,0.25);
+  }
+
+  .hub{
+    position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
+    width: 20%; height:20%; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, var(--gold-pale), var(--gold) 60%, #9c7a24 100%);
+    box-shadow: 0 3px 8px rgba(0,0,0,0.4), inset 0 0 0 2px rgba(255,255,255,0.25);
+    z-index:4;
+    display:flex; align-items:center; justify-content:center;
+    font-weight:800; color: var(--bg-deep); font-size: clamp(14px,3.2vw,20px);
+  }
+
+  .spin-btn{
+    appearance:none; border:none; cursor:pointer;
+    font-family:'Vazirmatn', sans-serif; font-weight:800; font-size:17px;
+    color: var(--bg-deep);
+    background: linear-gradient(180deg, var(--gold-pale), var(--gold));
+    padding: 15px 54px;
+    border-radius: 999px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.4);
+    transition: transform .12s ease, box-shadow .12s ease, opacity .2s ease;
+  }
+  .spin-btn:hover:not(:disabled){ transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.4); }
+  .spin-btn:active:not(:disabled){ transform: translateY(0px) scale(.98); }
+  .spin-btn:disabled{ opacity:0.6; cursor:not-allowed; }
+  .spin-btn:focus-visible{ outline: 2px solid var(--cream); outline-offset:3px; }
+
+  .hint{ margin-top:14px; font-size:12.5px; color: var(--cream-dim); opacity:.8; }
+
+  /* PHONE INPUT */
+  .phone-group{
+    width:100%; max-width:320px; margin: 0 0 18px;
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .phone-group label{
+    font-size:13px; color: var(--cream-dim);
+  }
+  .phone-group input{
+    background: var(--bg-panel); color: var(--cream);
+    border: 1px solid var(--line); border-radius:12px;
+    padding: 12px 14px; font-family:'Vazirmatn', sans-serif; font-size:15px;
+    direction: ltr; text-align:center; letter-spacing:0.03em;
+  }
+  .phone-group input::placeholder{ color: var(--cream-dim); opacity:.55; }
+  .phone-group input:focus-visible{ outline:2px solid var(--gold); outline-offset:1px; }
+  .phone-error{ color: var(--ruby); font-size:12.5px; min-height:16px; }
+  .phone-locked-msg{
+    color: var(--gold-pale); font-size:12.5px; min-height:16px;
+    background: rgba(214,169,59,0.10); border:1px solid rgba(214,169,59,0.3);
+    border-radius:10px; padding:8px 12px; display:none;
+  }
+  .phone-locked-msg.show{ display:block; }
+
+  .phone-row{ display:flex; gap:8px; }
+  .phone-row input{ flex:1; min-width:0; }
+  .otp-btn{
+    appearance:none; border:1px solid var(--line); cursor:pointer;
+    font-family:'Vazirmatn', sans-serif; font-weight:700; font-size:13px;
+    color: var(--bg-deep); background: linear-gradient(180deg, var(--gold-pale), var(--gold));
+    padding: 0 14px; border-radius:12px; white-space:nowrap;
+    transition: opacity .15s ease, transform .12s ease;
+  }
+  .otp-btn:hover:not(:disabled){ opacity:.92; transform: translateY(-1px); }
+  .otp-btn:active:not(:disabled){ transform: translateY(0) scale(.98); }
+  .otp-btn:disabled{ opacity:.5; cursor:not-allowed; background: var(--bg-panel); color: var(--cream-dim); border:1px solid var(--line); }
+  .otp-btn:focus-visible{ outline: 2px solid var(--gold); outline-offset:2px; }
+
+  .otp-group{
+    margin-top:12px; display:none; flex-direction:column; gap:6px;
+  }
+  .otp-group.show{ display:flex; }
+  .otp-group label{ font-size:13px; color: var(--cream-dim); }
+  .otp-group input{
+    background: var(--bg-panel); color: var(--cream);
+    border: 1px solid var(--line); border-radius:12px;
+    padding: 12px 14px; font-family:'Vazirmatn', sans-serif; font-size:18px;
+    direction: ltr; text-align:center; letter-spacing:8px;
+  }
+  .otp-error{ color: var(--ruby); font-size:12.5px; min-height:16px; }
+  .otp-success{
+    color: var(--teal-light); font-size:12.5px; min-height:16px;
+    background: rgba(46,156,144,0.12); border:1px solid rgba(46,156,144,0.35);
+    border-radius:10px; padding:8px 12px; display:none;
+  }
+  .otp-success.show{ display:block; }
+
+  .result-code{
+    margin-top: 4px; margin-bottom: 18px;
+    font-family:'Vazirmatn', sans-serif; direction: ltr;
+    font-size: 20px; font-weight:800; letter-spacing:2px;
+    color: var(--gold); background: rgba(214,169,59,0.10);
+    border: 1px dashed var(--gold); border-radius:12px;
+    padding: 10px 14px;
+  }
+  .result-sms-note{ font-size:12px; color: var(--cream-dim); margin-bottom:16px; line-height:1.7; }
+
+  .btn-primary{
+    padding:12px 16px; border-radius:12px; border:none; cursor:pointer;
+    font-family:'Vazirmatn', sans-serif; font-weight:700; font-size:14.5px;
+    background: var(--gold); color: var(--bg-deep);
+    transition: opacity .15s ease, transform .12s ease;
+  }
+  .btn-primary:hover{ opacity:.92; transform: translateY(-1px); }
+
+  /* RESULT MODAL */
+  .result-overlay{
+    position:fixed; inset:0; z-index:30;
+    display:flex; align-items:center; justify-content:center;
+    background: rgba(6,20,19,0.72);
+    opacity:0; pointer-events:none; transition: opacity .25s ease;
+    overflow:hidden;
+  }
+  .result-overlay.open{ opacity:1; pointer-events:auto; }
+
+  .result-card{
+    background: linear-gradient(180deg, var(--bg-panel-2), var(--bg-panel));
+    border: 1px solid var(--gold); border-radius:20px;
+    padding: 34px 30px; width: min(86vw, 360px); text-align:center;
+    transform: scale(.85); transition: transform .3s ease;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    position:relative; z-index:2;
+  }
+  .result-overlay.open .result-card{ transform: scale(1); }
+
+  .result-label{ font-size:13px; color: var(--gold-pale); letter-spacing:.05em; margin-bottom:10px; }
+  .result-prize{ font-size: clamp(22px,6vw,30px); font-weight:800; color: var(--cream); margin-bottom:18px; line-height:1.4; }
+  .result-card .btn-primary{ width:100%; }
+
+  .confetti{
+    position:absolute; top:-10px; width:8px; height:14px; z-index:1;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform: translateY(120vh) rotate(540deg); opacity:0.3; }
+  }
+
+  .sr-only{
+    position:absolute; width:1px;height:1px; padding:0; margin:-1px;
+    overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    #wheelSvg{ transition-duration: .6s; }
+    .confetti{ animation: none; display:none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="bg-pattern"></div>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">تخفیف ویژه مشتری‌ها</div>
+    <h1>گردونه <span>شانس</span></h1>
+    <p class="subtitle">بچرخون و شانستو برای گرفتن تخفیف امتحان کن!</p>
+  </header>
+
+  <div class="wheel-stage">
+    <svg class="pointer" viewBox="0 0 34 42" xmlns="http://www.w3.org/2000/svg">
+      <path d="M17 42 L2 14 A16 16 0 1 1 32 14 Z" fill="#D6A93B" stroke="#0E3B39" stroke-width="1.5"></path>
+      <circle cx="17" cy="14" r="5.5" fill="#0E3B39"></circle>
+    </svg>
+    <div class="rim">
+      <div class="rim-inner">
+        <svg id="wheelSvg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg"><path d="M 150 150 L 150.00 2.00 A 148 148 0 0 1 254.65 45.35 Z" fill="#0E3B39" stroke="#0E3B39" stroke-width="2"></path><text x="185.12" y="65.22" fill="#F4EDE0" font-size="12.5" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="middle" transform="rotate(-67.50 185.12 65.22)">۵٪ تخفیف</text><path d="M 150 150 L 254.65 45.35 A 148 148 0 0 1 298.00 150.00 Z" fill="#D6A93B" stroke="#0E3B39" stroke-width="2"></path><text x="234.78" y="114.88" fill="#0E3B39" font-size="12.5" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="middle" transform="rotate(-22.50 234.78 114.88)">۱۰٪ تخفیف</text><path d="M 150 150 L 298.00 150.00 A 148 148 0 0 1 254.65 254.65 Z" fill="#1C6E67" stroke="#0E3B39" stroke-width="2"></path><text x="234.78" y="185.12" fill="#F4EDE0" font-size="12.5" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="middle" transform="rotate(22.50 234.78 185.12)">ارسال رایگان</text><path d="M 150 150 L 254.65 254.65 A 148 148 0 0 1 150.00 298.00 Z" fill="#EFD8A4" stroke="#0E3B39" stroke-width="2"></path><text x="185.12" y="234.78" fill="#0E3B39" font-size="12.5" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="middle" transform="rotate(67.50 185.12 234.78)">شانس دوباره</text><path d="M 150 150 L 150.00 298.00 A 148 148 0 0 1 45.35 254.65 Z" fill="#2E9C90" stroke="#0E3B39" stroke-width="2"></path><text x="114.88" y="234.78" fill="#F4EDE0" font-size="12.5" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="middle" transform="rotate(292.50 114.88 234.78)">۱۵٪ تخفیف</text><path d="M 150 150 L 45.35 254.65 A 148 148 0 0 1 2.00 150.00 Z" fill="#A63446" stroke="#0E3B39" stroke-width="2"></path><text x="65.22" y="185.12" fill="#F4EDE0" font-size="12.5" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="middle" transform="rotate(337.50 65.22 185.12)">پوچ</text><path d="M 150 150 L 2.00 150.00 A 148 148 0 0 1 45.35 45.35 Z" fill="#0E3B39" stroke="#0E3B39" stroke-width="2"></path><text x="65.22" y="114.88" fill="#F4EDE0" font-size="12.5" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="middle" transform="rotate(382.50 65.22 114.88)">۲۰٪ تخفیف ویژه</text><path d="M 150 150 L 45.35 45.35 A 148 148 0 0 1 150.00 2.00 Z" fill="#D6A93B" stroke="#0E3B39" stroke-width="2"></path><text x="114.88" y="65.22" fill="#0E3B39" font-size="12.5" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="middle" transform="rotate(427.50 114.88 65.22)">هدیه شگفت‌انگیز</text></svg>
+      </div>
+    </div>
+    <div class="hub">٪</div>
+  </div>
+
+  <div class="phone-group">
+    <label for="phoneInput">شماره موبایل خود را وارد کن</label>
+    <div class="phone-row">
+      <input type="tel" id="phoneInput" placeholder="09xxxxxxxxx" maxlength="11" inputmode="numeric" autocomplete="tel">
+      <button type="button" class="otp-btn" id="requestOtpBtn">دریافت کد</button>
+    </div>
+    <div class="phone-error" id="phoneError"></div>
+    <div class="phone-locked-msg" id="phoneLockedMsg"></div>
+
+    <div class="otp-group" id="otpGroup">
+      <label for="otpInput">کد ۵ رقمی پیامک‌شده را وارد کن</label>
+      <div class="phone-row">
+        <input type="text" id="otpInput" placeholder="•••••" maxlength="5" inputmode="numeric" autocomplete="one-time-code">
+        <button type="button" class="otp-btn" id="verifyOtpBtn">تأیید کد</button>
+      </div>
+      <div class="otp-error" id="otpError"></div>
+      <div class="otp-success" id="otpSuccess"></div>
+    </div>
+  </div>
+
+  <button class="spin-btn" id="spinBtn" disabled="disabled">بچرخون!</button>
+  <p class="hint">اول شماره‌ت رو تأیید کن، بعد گردونه رو بچرخون</p>
+
+</div>
+
+<!-- Result Modal -->
+<div class="result-overlay" id="resultOverlay">
+  <div class="result-card">
+    <div class="result-label">تبریک می‌گیم!</div>
+    <div class="result-prize" id="resultPrizeText"></div>
+    <div class="result-code" id="resultCodeText"></div>
+    <div class="result-sms-note" id="resultSmsNote"></div>
+    <button class="btn-primary" id="closeResult">باشه</button>
+  </div>
+</div>
+
+<script>
+(function(){
+  const SEGMENT_COLORS = ['#0E3B39', '#D6A93B', '#1C6E67', '#EFD8A4', '#2E9C90', '#A63446'];
+  const TEXT_ON_DARK = '#F4EDE0';
+  const TEXT_ON_LIGHT = '#0E3B39';
+  const LIGHT_BG = new Set(['#D6A93B', '#EFD8A4']);
+
+  /*
+   * لیست جوایز گردونه (ثابت — دیگر از داخل سایت قابل ویرایش نیست).
+   * هر جایزه یک برچسب کد دارد (P1, P2, ...) که در کد تخفیف تولیدی
+   * درج می‌شود، یعنی وقتی کد را دریافت می‌کنی (مثلاً GS-P3-AB12-6789)
+   * از روی برچسب Pn می‌توانی دقیقاً بفهمی مشتری چه تخفیفی برده:
+   *
+   *   P1 → ۵٪ تخفیف
+   *   P2 → ۱۰٪ تخفیف
+   *   P3 → ارسال رایگان
+   *   P4 → شانس دوباره
+   *   P5 → ۱۵٪ تخفیف
+   *   P6 → پوچ (بدون جایزه)
+   *   P7 → ۲۰٪ تخفیف ویژه
+   *   P8 → هدیه شگفت‌انگیز
+   *
+   * اگر بعداً متن جوایز را در همین آرایه عوض کنی، همین جدول بالا
+   * (ترتیب P1..P8) هم باید به‌روزرسانی شود چون شماره‌ی Pn برابر است
+   * با جایگاه جایزه در آرایه‌ی prizes (شمارش از ۱).
+   */
+  const prizes = ['۵٪ تخفیف', '۱۰٪ تخفیف', 'ارسال رایگان', 'شانس دوباره', '۱۵٪ تخفیف', 'پوچ', '۲۰٪ تخفیف ویژه', 'هدیه شگفت‌انگیز'];
+  let currentRotation = 0;
+  let spinning = false;
+
+  const svg = document.getElementById('wheelSvg');
+  const spinBtn = document.getElementById('spinBtn');
+  const resultOverlay = document.getElementById('resultOverlay');
+  const resultPrizeText = document.getElementById('resultPrizeText');
+  const resultCodeText = document.getElementById('resultCodeText');
+  const resultSmsNote = document.getElementById('resultSmsNote');
+  const closeResultBtn = document.getElementById('closeResult');
+  const phoneInput = document.getElementById('phoneInput');
+  const phoneError = document.getElementById('phoneError');
+  const phoneLockedMsg = document.getElementById('phoneLockedMsg');
+  const requestOtpBtn = document.getElementById('requestOtpBtn');
+  const otpGroup = document.getElementById('otpGroup');
+  const otpInput = document.getElementById('otpInput');
+  const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+  const otpError = document.getElementById('otpError');
+  const otpSuccess = document.getElementById('otpSuccess');
+
+  let phoneVerified = false;
+  let verifiedPhone = '';
+  let currentOtp = null;
+  let otpCooldownTimer = null;
+
+  const STORAGE_PREFIX = 'gardooneShansi_';
+
+  /* ---------- شماره موبایل و محدودیت روزانه ---------- */
+
+  function normalizePhone(raw){
+    return (raw || '').trim().replace(/[^0-9]/g, '');
+  }
+
+  function isValidIranPhone(phone){
+    return /^09\d{9}$/.test(phone);
+  }
+
+  function todayKey(){
+    const d = new Date();
+    return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+  }
+
+  function getSpinRecord(phone){
+    try{
+      const raw = localStorage.getItem(STORAGE_PREFIX + phone);
+      return raw ? JSON.parse(raw) : null;
+    }catch(e){ return null; }
+  }
+
+  function saveSpinRecord(phone, record){
+    try{
+      localStorage.setItem(STORAGE_PREFIX + phone, JSON.stringify(record));
+    }catch(e){ /* localStorage may be unavailable */ }
+  }
+
+  function hasSpunToday(phone){
+    const rec = getSpinRecord(phone);
+    return !!(rec && rec.day === todayKey());
+  }
+
+  function refreshLockedMessage(){
+    const phone = normalizePhone(phoneInput.value);
+    if (phone.length === 11 && isValidIranPhone(phone) && hasSpunToday(phone)){
+      const rec = getSpinRecord(phone);
+      phoneLockedMsg.textContent = `این شماره امروز قبلاً از گردونه استفاده کرده و کد «${rec.code}» برایش ارسال شده. فردا دوباره امتحان کن.`;
+      phoneLockedMsg.classList.add('show');
+    } else {
+      phoneLockedMsg.classList.remove('show');
+      phoneLockedMsg.textContent = '';
+    }
+    updateSpinButtonState();
+  }
+
+  function updateSpinButtonState(){
+    if (spinning) { spinBtn.disabled = true; return; }
+    if (!phoneVerified || !verifiedPhone){ spinBtn.disabled = true; return; }
+    spinBtn.disabled = hasSpunToday(verifiedPhone);
+  }
+
+  function resetVerification(){
+    phoneVerified = false;
+    verifiedPhone = '';
+    currentOtp = null;
+    otpGroup.classList.remove('show');
+    otpInput.value = '';
+    otpInput.disabled = false;
+    verifyOtpBtn.disabled = false;
+    otpError.textContent = '';
+    otpSuccess.classList.remove('show');
+    otpSuccess.textContent = '';
+    clearInterval(otpCooldownTimer);
+    requestOtpBtn.disabled = false;
+    requestOtpBtn.textContent = 'دریافت کد';
+    updateSpinButtonState();
+  }
+
+  phoneInput.addEventListener('input', () => {
+    phoneError.textContent = '';
+    // اگر کاربر شماره را عوض کند، تأیید قبلی (اگر بود) دیگر معتبر نیست
+    if (phoneVerified || otpGroup.classList.contains('show')){
+      resetVerification();
+      phoneInput.disabled = false;
+    }
+    refreshLockedMessage();
+  });
+
+  /* ---------- تأیید شماره با کد پیامکی (OTP) ---------- */
+
+  // آدرس بک‌اند برای ارسال کد تأیید. مثل SMS_BACKEND_URL باید یک
+  // سرور/تابع سرورلس واقعی باشد که با کلید API سرویس پیامکی‌ات کار کند.
+  const OTP_BACKEND_URL = 'https://YOUR_BACKEND_URL/api/send-otp';
+
+  function generateOtp(){
+    return String(Math.floor(10000 + Math.random() * 90000)); // عدد ۵ رقمی
+  }
+
+  async function sendOtpBySms(phone, otp){
+    try{
+      const res = await fetch(OTP_BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp })
+      });
+      if (!res.ok) throw new Error('پاسخ نامعتبر از سرور');
+      return true;
+    }catch(e){
+      console.error('ارسال کد تأیید ناموفق بود. آدرس OTP_BACKEND_URL را با بک‌اند واقعی جایگزین کن. (کد برای تست:', otp, ')', e);
+      return false;
+    }
+  }
+
+  function startOtpCooldown(seconds){
+    let remaining = seconds;
+    requestOtpBtn.disabled = true;
+    requestOtpBtn.textContent = `ارسال مجدد (${remaining})`;
+    clearInterval(otpCooldownTimer);
+    otpCooldownTimer = setInterval(() => {
+      remaining -= 1;
+      if (remaining <= 0){
+        clearInterval(otpCooldownTimer);
+        requestOtpBtn.disabled = false;
+        requestOtpBtn.textContent = 'ارسال مجدد کد';
+      } else {
+        requestOtpBtn.textContent = `ارسال مجدد (${remaining})`;
+      }
+    }, 1000);
+  }
+
+  async function requestOtp(){
+    const phone = normalizePhone(phoneInput.value);
+    phoneError.textContent = '';
+    otpError.textContent = '';
+    otpSuccess.classList.remove('show');
+
+    if (!isValidIranPhone(phone)){
+      phoneError.textContent = 'شماره موبایل معتبر وارد کن (مثل ۰۹۱۲۳۴۵۶۷۸۹).';
+      phoneInput.focus();
+      return;
+    }
+
+    if (hasSpunToday(phone)){
+      refreshLockedMessage();
+      return;
+    }
+
+    phoneVerified = false;
+    verifiedPhone = '';
+    updateSpinButtonState();
+
+    currentOtp = generateOtp();
+    requestOtpBtn.disabled = true;
+    const ok = await sendOtpBySms(phone, currentOtp);
+
+    otpGroup.classList.add('show');
+    otpInput.disabled = false;
+    verifyOtpBtn.disabled = false;
+    otpInput.value = '';
+    otpInput.focus();
+
+    if (!ok){
+      otpError.textContent = 'ارسال پیامک با مشکل مواجه شد. آدرس بک‌اند را بررسی کن (کد در کنسول مرورگر برای تست موجود است).';
+    }
+
+    startOtpCooldown(60);
+  }
+
+  function verifyOtp(){
+    const phone = normalizePhone(phoneInput.value);
+    const entered = (otpInput.value || '').trim();
+    otpError.textContent = '';
+
+    if (!currentOtp){
+      otpError.textContent = 'ابتدا روی «دریافت کد» بزن.';
+      return;
+    }
+    if (!entered){
+      otpError.textContent = 'کد پیامک‌شده را وارد کن.';
+      return;
+    }
+    if (entered !== currentOtp){
+      otpError.textContent = 'کد وارد شده صحیح نیست.';
+      return;
+    }
+
+    phoneVerified = true;
+    verifiedPhone = phone;
+    otpSuccess.textContent = 'شماره با موفقیت تأیید شد. حالا می‌تونی گردونه رو بچرخونی!';
+    otpSuccess.classList.add('show');
+    otpInput.disabled = true;
+    verifyOtpBtn.disabled = true;
+    requestOtpBtn.disabled = true;
+    phoneInput.disabled = true;
+    clearInterval(otpCooldownTimer);
+
+    refreshLockedMessage();
+  }
+
+  requestOtpBtn.addEventListener('click', requestOtp);
+  verifyOtpBtn.addEventListener('click', verifyOtp);
+
+  /* ---------- تولید کد تخفیف اختصاصی ---------- */
+
+  function makeRandomChunk(len){
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    let out = '';
+    for(let i=0;i<len;i++) out += chars[Math.floor(Math.random()*chars.length)];
+    return out;
+  }
+
+  function generateCode(prizeIndex, phone){
+    const prizeTag = 'P' + (prizeIndex + 1);
+    const phoneTail = phone.slice(-4);
+    return `GS-${prizeTag}-${makeRandomChunk(4)}-${phoneTail}`;
+  }
+
+  /* ---------- ارسال پیامک (نیازمند بک‌اند واقعی) ---------- */
+
+  // آدرس بک‌اند خودت را اینجا بگذار (باید یک سرور/تابع سرورلس باشد که
+  // با کلید API سرویس پیامکی -مثل کاوه‌نگار، ملی‌پیامک، ippanel- پیامک
+  // را ارسال کند. کلید API هرگز نباید داخل این فایل HTML قرار بگیرد،
+  // چون هر بازدیدکننده‌ای با «مشاهده سورس صفحه» می‌تواند آن را ببیند).
+  const SMS_BACKEND_URL = 'https://YOUR_BACKEND_URL/api/send-sms';
+
+  async function sendCodeBySms(phone, code, prize){
+    try{
+      const res = await fetch(SMS_BACKEND_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, code, prize })
+      });
+      if (!res.ok) throw new Error('پاسخ نامعتبر از سرور پیامک');
+      return true;
+    }catch(e){
+      console.error('ارسال پیامک ناموفق بود. آدرس SMS_BACKEND_URL را با آدرس بک‌اند واقعی خودت جایگزین کن.', e);
+      return false;
+    }
+  }
+
+  function polar(cx, cy, r, angleDeg){
+    const a = (angleDeg * Math.PI) / 180;
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
+  }
+
+  function buildWheel(){
+    const n = prizes.length;
+    const segAngle = 360 / n;
+    const cx = 150, cy = 150, R = 148;
+    let svgContent = '';
+
+    for(let i=0; i<n; i++){
+      const startA = i*segAngle - 90;
+      const endA = startA + segAngle;
+      const p0 = polar(cx, cy, R, startA);
+      const p1 = polar(cx, cy, R, endA);
+      const largeArc = segAngle > 180 ? 1 : 0;
+      const color = SEGMENT_COLORS[i % SEGMENT_COLORS.length];
+      const path = `M ${cx} ${cy} L ${p0.x.toFixed(2)} ${p0.y.toFixed(2)} A ${R} ${R} 0 ${largeArc} 1 ${p1.x.toFixed(2)} ${p1.y.toFixed(2)} Z`;
+      svgContent += `<path d="${path}" fill="${color}" stroke="#0E3B39" stroke-width="2"/>`;
+
+      const midA = startA + segAngle/2;
+      const textR = R * 0.62;
+      const tp = polar(cx, cy, textR, midA);
+      let rot = midA;
+      let anchor = 'middle';
+      if (rot > 90 && rot < 270) { rot += 180; }
+      const fill = LIGHT_BG.has(color) ? TEXT_ON_LIGHT : TEXT_ON_DARK;
+      const fontSize = n > 8 ? 11 : (n > 6 ? 12.5 : 14.5);
+
+      const label = escapeXml(prizes[i]);
+      svgContent += `<text x="${tp.x.toFixed(2)}" y="${tp.y.toFixed(2)}" fill="${fill}" font-size="${fontSize}" font-weight="700" font-family="Vazirmatn, sans-serif" text-anchor="${anchor}" transform="rotate(${rot.toFixed(2)} ${tp.x.toFixed(2)} ${tp.y.toFixed(2)})">${label}</text>`;
+    }
+    svg.innerHTML = svgContent;
+  }
+
+  function escapeXml(str){
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function normalize(deg){
+    return ((deg % 360) + 360) % 360;
+  }
+
+  function spin(){
+    if (spinning) return;
+
+    phoneError.textContent = '';
+
+    if (!phoneVerified || !verifiedPhone){
+      phoneError.textContent = 'ابتدا شماره‌ت را با کد پیامکی تأیید کن.';
+      return;
+    }
+
+    const phone = verifiedPhone;
+
+    if (hasSpunToday(phone)){
+      refreshLockedMessage();
+      return;
+    }
+
+    spinning = true;
+    spinBtn.disabled = true;
+    spinBtn.textContent = 'در حال چرخش...';
+
+    const n = prizes.length;
+    const segAngle = 360 / n;
+    const winnerIndex = Math.floor(Math.random() * n);
+    const originalCenterAngle = -90 + winnerIndex*segAngle + segAngle/2;
+
+    let desired = normalize(-90 - originalCenterAngle);
+    let jitter = (Math.random() - 0.5) * segAngle * 0.5;
+    desired = normalize(desired + jitter);
+
+    const curMod = normalize(currentRotation);
+    let delta = normalize(desired - curMod);
+    const fullSpins = 6;
+    const totalDelta = delta + fullSpins*360;
+
+    currentRotation += totalDelta;
+    svg.style.transform = `rotate(${currentRotation}deg)`;
+
+    const onEnd = async function(){
+      svg.removeEventListener('transitionend', onEnd);
+      spinning = false;
+      spinBtn.textContent = 'بچرخون!';
+
+      const prize = prizes[winnerIndex];
+      const code = generateCode(winnerIndex, phone);
+
+      saveSpinRecord(phone, { day: todayKey(), code, prize, ts: Date.now() });
+      const smsSent = await sendCodeBySms(phone, code, prize);
+
+      showResult(prize, code, phone, smsSent);
+      refreshLockedMessage();
+      phoneInput.disabled = true;
+    };
+    svg.addEventListener('transitionend', onEnd);
+  }
+
+  function showResult(prize, code, phone, smsSent){
+    resultPrizeText.textContent = prize;
+    resultCodeText.textContent = code;
+    resultSmsNote.textContent = smsSent
+      ? `کد تخفیف بالا به شماره ${phone} پیامک شد. این شماره تا فردا دیگر نمی‌تواند از گردونه استفاده کند.`
+      : `کد تخفیف بالا برای شماره ${phone} ثبت شد، اما ارسال پیامکش با مشکل مواجه شد (کد را همینجا یادداشت کن). این شماره تا فردا دیگر نمی‌تواند از گردونه استفاده کند.`;
+    resultOverlay.classList.add('open');
+    launchConfetti();
+  }
+
+  function launchConfetti(){
+    const colors = ['#D6A93B', '#EFD8A4', '#2E9C90', '#A63446', '#F4EDE0'];
+    for(let i=0; i<40; i++){
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      el.style.left = Math.random()*100 + '%';
+      el.style.background = colors[Math.floor(Math.random()*colors.length)];
+      el.style.animationDuration = (2.2 + Math.random()*1.6) + 's';
+      el.style.animationDelay = (Math.random()*0.4) + 's';
+      el.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      resultOverlay.appendChild(el);
+      setTimeout(() => el.remove(), 4200);
+    }
+  }
+
+  function closeResult(){
+    resultOverlay.classList.remove('open');
+  }
+
+  spinBtn.addEventListener('click', spin);
+  closeResultBtn.addEventListener('click', closeResult);
+  resultOverlay.addEventListener('click', (e) => { if (e.target === resultOverlay) closeResult(); });
+
+  buildWheel();
+  refreshLockedMessage();
+})();
+</script>
+
+
+
+</body></html>
